@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var imagenesJson = System.Text.Json.JsonSerializer.Serialize(Model);
 }
 
 <h1>Imágenes</h1>
@@ -10,30 +11,51 @@
     <a asp-action="Create" class="btn btn-primary">Subir nueva imagen</a>
 </p>
 
-<table class="table table-bordered">
-    <thead class="table-light">
-        <tr>
-            <th>Vista previa</th>
-            <th>Producto</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <img src="~/imagenes/@item.Ruta" alt="Imagen" width="150" height="100" class="img-thumbnail" />
-                </td>
-                <td>
-                    @item.Producto.Nombre (@item.Producto.ProductoId)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ImagenId" class="btn btn-sm btn-warning">Editar</a>
-                    <a asp-action="Details" asp-route-id="@item.ImagenId" class="btn btn-sm btn-info">Detalles</a>
-                    <a asp-action="Delete" asp-route-id="@item.ImagenId" class="btn btn-sm btn-danger">Eliminar</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div id="imagenes-react-root"></div>
+
+<!-- React y ReactDOM desde CDN -->
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+<script>
+    // Datos pasados desde Razor a JS
+    const imagenesData = @Html.Raw(imagenesJson);
+
+    const e = React.createElement;
+
+    function ImagenesLista({ imagenes }) {
+      return e('table', { className: 'table table-bordered' },
+        e('thead', { className: 'table-light' },
+          e('tr', null,
+            e('th', null, 'Vista previa'),
+            e('th', null, 'Producto'),
+            e('th', null, 'Acciones'),
+          )
+        ),
+        e('tbody', null,
+          imagenes.map(item =>
+            e('tr', { key: item.ImagenId },
+              e('td', null,
+                e('img', {
+                  src: `/imagenes/${item.Ruta}`,
+                  alt: 'Imagen',
+                  width: 150,
+                  height: 100,
+                  className: 'img-thumbnail'
+                })
+              ),
+              e('td', null, `${item.Producto.Nombre} (${item.Producto.ProductoId})`),
+              e('td', null,
+                e('a', { href: `/Imagenes/Edit/${item.ImagenId}`, className: 'btn btn-sm btn-warning me-1' }, 'Editar'),
+                e('a', { href: `/Imagenes/Details/${item.ImagenId}`, className: 'btn btn-sm btn-info me-1' }, 'Detalles'),
+                e('a', { href: `/Imagenes/Delete/${item.ImagenId}`, className: 'btn btn-sm btn-danger' }, 'Eliminar'),
+              )
+            )
+          )
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('imagenes-react-root'));
+    root.render(e(ImagenesLista, { imagenes: imagenesData }));
+</script>

@@ -153,5 +153,11 @@ namespace ticomarkenet.Controllers
         {
             return _context.Usuarios.Any(e => e.UsuarioId == id);
         }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
     }
 }

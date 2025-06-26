@@ -1,0 +1,223 @@
+﻿@{
+
+    ViewData["Title"] = "Contáctanos";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>@ViewData["Title"] - TicoMarket</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+    <!-- Bootstrap y Leaflet -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+
+
+    <!-- React y Babel -->
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+</head>
+
+<body>
+
+
+
+    <!-- Encabezado -->
+
+    <div class="container-fluid py-5" style="background-color: var(--color-2);">
+
+        <div class="col-md-6 m-auto text-center">
+
+            <h1 class="h1 text-white">Contáctanos</h1>
+
+            <p class="text-white">¿Tienes preguntas o comentarios? ¡Estamos aquí para ayudarte!</p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Mapa -->
+
+    <div id="mapid" style="width: 100%; height: 300px;"></div>
+
+
+
+    <!-- React Container -->
+
+    <div class="container py-5">
+
+        <div class="row py-5">
+
+            <div id="react-form"></div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Leaflet.js -->
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+
+
+        const map = L.map('mapid').setView([10.095, -83.506], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+            maxZoom: 18,
+
+            attribution: '&copy; OpenStreetMap contributors'
+
+        }).addTo(map);
+
+        L.marker([10.095, -83.506]).addTo(map)
+
+            .bindPopup("<b>Estamos en Siquirres</b><br />Limón, Costa Rica.")
+
+            .openPopup();
+
+        map.scrollWheelZoom.disable();
+
+        map.touchZoom.disable();
+
+    </script>
+
+
+
+    <!-- React Form -->
+
+    <script type="text/babel">
+
+
+        function ContactForm() {
+
+            const [showAlert, setShowAlert] = React.useState(false);
+
+
+
+            const handleSubmit = (e) => {
+
+                e.preventDefault();
+
+                setShowAlert(true);
+
+                e.target.reset();
+
+
+
+                setTimeout(() => {
+
+                    setShowAlert(false);
+
+                }, 5000);
+
+            };
+
+
+
+            return (
+
+                <form className="col-md-9 m-auto" onSubmit={handleSubmit}>
+
+                    <div className="row">
+
+                        <div className="form-group col-md-6 mb-3">
+
+                            <label className="text-primary">Nombre</label>
+
+                            <input type="text" className="form-control mt-1" placeholder="Tu nombre" required />
+
+                        </div>
+
+                        <div className="form-group col-md-6 mb-3">
+
+                            <label className="text-primary">Correo electrónico</label>
+
+                            <input type="email" className="form-control mt-1" placeholder="Tu correo" required />
+
+                        </div>
+
+                    </div>
+
+                    <div className="mb-3">
+
+                        <label className="text-primary">Asunto</label>
+
+                        <input type="text" className="form-control mt-1" placeholder="Asunto" required />
+
+                    </div>
+
+                    <div className="mb-3">
+
+                        <label className="text-primary">Mensaje</label>
+
+                        <textarea className="form-control mt-1" rows="8" placeholder="Escribe tu mensaje aquí..." required></textarea>
+
+                    </div>
+
+                    <div className="row">
+
+                        <div className="col text-end mt-2">
+
+                            <button type="submit" className="btn btn-primary btn-lg px-3">Enviar</button>
+
+                        </div>
+
+                    </div>
+
+                    {showAlert && (
+
+                        <div className="alert alert-success mt-4" role="alert">
+
+                            ¡Tu mensaje se ha enviado con éxito!
+
+                        </div>
+
+                    )}
+
+                </form>
+
+            );
+
+        }
+
+
+
+        const root = ReactDOM.createRoot(document.getElementById('react-form'));
+
+        root.render(<ContactForm />);
+
+    </script>
+
+
+
+</body>
+
+</html> 

@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Sobre Nosotros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section style="background-color: var(--color-2);" class="py-5">
+    <div class="container text-white text-center">
+        <h1 class="mb-4">Sobre Nosotros</h1>
+        <p class="lead">
+            Bienvenidos a TicoMarket, el espacio donde la innovación y el comercio local se encuentran.
+            Somos una plataforma diseñada para conectar emprendedores costarricenses con consumidores que buscan productos y servicios únicos,
+            impulsando el crecimiento de pequeños negocios y fortaleciendo comunidades.
+        </p>
+
+        <div class="d-flex justify-content-center mt-4">
+            <img src="/assets/img/TicoMarket.png" alt="Logo TicoMarket" class="img-fluid" style="max-height: 200px;" />
+        </div>
+    </div>
+</section>
+
+
+
+<section class="container py-5">
+    <div class="row text-center pt-5 pb-3">
+        <div class="col-lg-6 m-auto">
+            <h1 class="h1 text-primary">Nuestros Servicios</h1>
+            <p>Conectamos emprendedores locales con consumidores, ofreciendo una plataforma segura y accesible para impulsar el comercio nacional.</p>
+        </div>
+    </div>
+    <div id="react-servicios"></div>
+</section>
+
+@section Scripts {
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const Servicios = () => {
+            const datos = [
+                {
+                    icono: "fa-store",
+                    titulo: "Apoyo a Emprendedores",
+                    descripcion: "Facilitamos herramientas para que pequeños negocios crezcan y lleguen a más clientes."
+                },
+                {
+                    icono: "fa-lock",
+                    titulo: "Pagos Seguros",
+                    descripcion: "Garantizamos transacciones protegidas para que compres con confianza."
+                },
+                {
+                    icono: "fa-handshake",
+                    titulo: "Conexión Directa",
+                    descripcion: "Los compradores pueden comunicarse fácilmente con los vendedores para resolver dudas."
+                },
+                {
+                    icono: "fa-globe",
+                    titulo: "Expansión al Mercado Internacional",
+                    descripcion: "Apoyamos negocios locales con herramientas para su crecimiento global."
+                }
+            ];
+
+            return (
+                <div className="row">
+                    {datos.map((servicio, idx) => (
+                        <div key={idx} className="col-md-6 col-lg-3 pb-5">
+                            <div className="h-100 py-5 services-icon-wap shadow text-center border rounded">
+                                <div className="h1 text-primary mb-3">
+                                    <i className={`fa ${servicio.icono}`}></i>
+                                </div>
+                                <h2 className="h5">{servicio.titulo}</h2>
+                                <p>{servicio.descripcion}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('react-servicios'));
+        root.render(<Servicios />);
+    </script>
+}

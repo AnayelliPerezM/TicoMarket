@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión - TicoMarket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+  
+
+    <!-- MAIN -->
+    <main class="bg-light py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-body p-5">
+                            <h2 class="card-title text-center text-primary mb-4">Iniciar Sesión</h2>
+                            <div id="login-react"></div>
+                        </div>
+
+                        <div class="card-footer text-center py-3 bg-light">
+                            <p class="mb-0">
+                                ¿No tienes una cuenta?
+                                <a href="/registro" class="text-primary fw-bold">Regístrate aquí</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div>@await Html.PartialAsync("fragments/_Footer")</div>
+
+    <!-- React Component -->
+    <script type="text/babel">
+        function LoginForm() {
+            const [form, setForm] = React.useState({
+                username: "",
+                password: ""
+            });
+            const [mostrar, setMostrar] = React.useState(false);
+            const [error, setError] = React.useState("");
+
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                setForm(prev => ({ ...prev, [name]: value }));
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                // Aquí podrías hacer un fetch() para autenticar
+                console.log("Enviando login:", form);
+                setError(""); // o setError("Usuario o contraseña incorrectos");
+            };
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    {error && <div className="alert alert-danger" role="alert">
+                        <i className="fas fa-exclamation-circle me-2"></i>{error}
+                    </div>}
+
+                    <div className="mb-3">
+                        <label htmlFor="username" className="form-label">Correo electrónico</label>
+                        <div className="input-group">
+                            <span className="input-group-text"><i className="fas fa-envelope"></i></span>
+                            <input
+                                type="email"
+                                className="form-control"
+                                name="username"
+                                value={form.username}
+                                onChange={handleChange}
+                                placeholder="correo@ejemplo.com"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="password" className="form-label">Contraseña</label>
+                        <div className="input-group">
+                            <span className="input-group-text"><i className="fas fa-lock"></i></span>
+                            <input
+                                type={mostrar ? "text" : "password"}
+                                className="form-control"
+                                name="password"
+                                value={form.password}
+                                onChange={handleChange}
+                                placeholder="Ingrese su contraseña"
+                                required
+                            />
+                            <button type="button" className="btn btn-outline-primary" onClick={() => setMostrar(!mostrar)}>
+                                <i className={`fas ${mostrar ? "fa-eye-slash" : "fa-eye"}`}></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="d-grid mb-3">
+                        <button type="submit" className="btn btn-primary btn-lg">
+                            <i className="fas fa-sign-in-alt me-2"></i>Ingresar
+                        </button>
+                    </div>
+
+                    <div className="text-center">
+                        <a href="#" className="text-muted">¿Olvidó su contraseña?</a>
+                    </div>
+                </form>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("login-react"));
+        root.render(<LoginForm />);
+    </script>
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

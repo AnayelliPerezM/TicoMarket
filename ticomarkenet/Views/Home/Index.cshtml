@@ -1,8 +1,84 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<ticomarkenet.Models.Producto>
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+
+<body>
+
+    <!-- Carrusel -->
+    <div id="marketico-carousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Carrusel items aquí -->
+        </div>
+        <a class="carousel-control-prev text-decoration-none w-auto ps-3" href="#marketico-carousel" role="button" data-bs-slide="prev">
+            <i class="fas fa-chevron-left fa-2x text-info"></i>
+        </a>
+        <a class="carousel-control-next text-decoration-none w-auto pe-3" href="#marketico-carousel" role="button" data-bs-slide="next">
+            <i class="fas fa-chevron-right fa-2x text-info"></i>
+        </a>
+    </div>
+
+    <!-- Sección de productos -->
+    <section class="container py-5">
+        <div class="row text-center pb-3">
+            <div class="col-lg-6 m-auto">
+                <h1 class="h1 text-primary">Productos</h1>
+                <p>Explora los productos publicados por nuestros vendedores.</p>
+            </div>
+        </div>
+
+        <!-- Aquí se monta React -->
+        <div id="react-productos"></div>
+    </section>
+
+    <partial name="fragments/_Footer" />
+
+    <!-- Scripts React desde CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script>
+        const productos = @Html.Raw(Json.Serialize(Model));
+    </script>
+
+    <!-- React embebido -->
+    <script type="text/babel">
+        const Productos = ({ productos }) => {
+            if (!productos.length) {
+                return <p className="text-muted text-center">No hay productos disponibles por el momento.</p>;
+            }
+
+            return (
+                <div className="row">
+                    {productos.map(producto => (
+                        <div key={producto.id_producto} className="col-md-4 mb-4">
+                            <div className="card h-100 shadow">
+                                <img
+                                    src={producto.imagenes?.length > 0 ? producto.imagenes[0].url : "/imagenes/default.jpg"}
+                                    className="card-img-top"
+                                    alt="Producto"
+                                />
+                                <div className="card-body">
+                                    <h5 className="card-title">{producto.nombre}</h5>
+                                    <p className="card-text fw-bold text-primary">₡ {producto.precio.toFixed(2)}</p>
+                                </div>
+                                <div className="card-footer text-center">
+                                    <a href="/shop" className="btn btn-primary btn-sm">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        const container = document.getElementById('react-productos');
+        const root = ReactDOM.createRoot(container);
+        root.render(<Productos productos={productos} />);
+    </script>
+</body>
+</html>
