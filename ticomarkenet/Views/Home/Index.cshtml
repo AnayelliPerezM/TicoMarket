@@ -4,43 +4,104 @@
 }
 
 <!DOCTYPE html>
-<html lang="es">
-
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="fragments/header :: head">
+</head>
 <body>
 
-    <!-- Carrusel -->
-    <div id="marketico-carousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <!-- Carrusel items aquí -->
-        </div>
-        <a class="carousel-control-prev text-decoration-none w-auto ps-3" href="#marketico-carousel" role="button" data-bs-slide="prev">
-            <i class="fas fa-chevron-left fa-2x text-info"></i>
-        </a>
-        <a class="carousel-control-next text-decoration-none w-auto pe-3" href="#marketico-carousel" role="button" data-bs-slide="next">
-            <i class="fas fa-chevron-right fa-2x text-info"></i>
-        </a>
-    </div>
+    <!-- Header -->
+    <div th:replace="fragments/header :: body"></div>
 
-    <!-- Sección de productos -->
-    <section class="container py-5">
-        <div class="row text-center pb-3">
-            <div class="col-lg-6 m-auto">
-                <h1 class="h1 text-primary">Productos</h1>
-                <p>Explora los productos publicados por nuestros vendedores.</p>
+    <!-- Contenido principal -->
+    <main>
+
+        <div id="marketico-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <div class="container">
+                        <div class="row p-5 align-items-center">
+                            <div class="col-lg-6 text-start">
+                                <h1 class="h1 text-info"><b>Marketico</b> Online</h1>
+                                <h3 class="h2">Impulsando Emprendedores</h3>
+                                <p>Conectamos vendedores costarricenses con consumidores que buscan calidad y autenticidad.</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <img class="img-fluid rounded w-75" src="/assets/img/TicoMarket.png" alt="Banner 1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                    <div class="container">
+                        <div class="row p-5 align-items-center">
+                            <div class="col-lg-6 text-start">
+                                <h1 class="h1">Tu Marketplace de Confianza</h1>
+                                <h3 class="h2">Variedad</h3>
+                                <p>Productos únicos de emprendedores comprometidos con la excelencia.</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <img class="img-fluid rounded w-50" src="/assets/img/bici.jpg" alt="Banner 2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                    <div class="container">
+                        <div class="row p-5 align-items-center">
+                            <div class="col-lg-6 text-start">
+                                <h1 class="h1">Crecemos Contigo</h1>
+                                <h3 class="h2">Expande tu negocio</h3>
+                                <p>Herramientas para llevar tu emprendimiento al siguiente nivel.</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <img class="img-fluid rounded w-75" src="/assets/img/moto.jpg" alt="Banner 3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- Flechas -->
+            <a class="carousel-control-prev text-decoration-none w-auto ps-3" href="#marketico-carousel" role="button" data-bs-slide="prev">
+                <i class="fas fa-chevron-left fa-2x text-info"></i>
+            </a>
+            <a class="carousel-control-next text-decoration-none w-auto pe-3" href="#marketico-carousel" role="button" data-bs-slide="next">
+                <i class="fas fa-chevron-right fa-2x text-info"></i>
+            </a>
         </div>
 
-        <!-- Aquí se monta React -->
-        <div id="react-productos"></div>
-    </section>
 
-    <partial name="fragments/_Footer" />
+        <!-- Sección de productos -->
+        <section class="container py-5">
+            <div class="row text-center pb-3">
+                <div class="col-lg-6 m-auto">
+                    <h1 class="h1 text-primary">Productos</h1>
+                    <p>Explora los productos publicados por nuestros vendedores.</p>
+                </div>
+            </div>
+
+            <!-- Aquí se monta React -->
+            <div id="react-productos"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="fragments/footer :: footer"></div>
 
     <!-- Scripts React desde CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
+    <!-- Pasar modelo a JS -->
     <script>
         const productos = @Html.Raw(Json.Serialize(Model));
     </script>
