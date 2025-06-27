@@ -50,8 +50,7 @@ namespace ticomarkenet.Controllers
         }
 
         // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UsuarioId,Nombre,Correo,Password,Telefono,Direccion,Rol")] Usuario usuario)
@@ -64,6 +63,7 @@ namespace ticomarkenet.Controllers
             }
             return View(usuario);
         }
+
 
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)

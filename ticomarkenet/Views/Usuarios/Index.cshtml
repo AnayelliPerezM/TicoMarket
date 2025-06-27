@@ -2,112 +2,199 @@
 
 @{
     ViewData["Title"] = "Gestión de Usuarios";
-    Layout = null;
 }
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-users me-2"></i>Gestión de Usuarios</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#usuarioModal" onclick="abrirModalCreacion()">
+            <i class="fas fa-user-plus me-1"></i> Agregar Usuario
+        </button>
+    </div>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <div id="usuarios-react"></div>
+</div>
 
-    <!-- React y Babel -->
+<!-- Modal de Crear/Editar -->
+<div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formUsuario" method="post">
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="usuarioModalLabel">Nuevo Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="formError" class="text-danger mb-2"></div>
+                    <input type="hidden" id="UsuarioId" name="UsuarioId" />
+                    <div class="mb-2">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" name="Nombre" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Correo</label>
+                        <input type="email" class="form-control" name="Correo" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="Password" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Teléfono</label>
+                        <input type="text" class="form-control" name="Telefono" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Dirección</label>
+                        <input type="text" class="form-control" name="Direccion" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Rol</label>
+                        <select class="form-control" name="Rol">
+                            <option value="">Seleccione un rol</option>
+                            <option value="VEN">VEN</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="confirmarEliminacionModal" tabindex="-1" aria-labelledby="confirmarEliminacionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formEliminarUsuario" method="post">
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmarEliminacionLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeEliminarUsuario">¿Estás seguro de que deseas eliminar este usuario?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@section Scripts {
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-</head>
-<body>
 
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2 text-primary"><i class="fas fa-users me-2"></i> Gestión de Usuarios</h1>
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#nuevoUsuarioModal">
-                <i class="fas fa-user-plus me-2"></i>Agregar Usuario
-            </button>
-        </div>
-
-        <!-- React Table Container -->
-        <div id="usuarios-react"></div>
-    </div>
-
-    <!-- JSON para React -->
     <script>
         const usuarios = @Html.Raw(Json.Serialize(Model));
+
+        function abrirModalCreacion() {
+            const form = document.getElementById("formUsuario");
+            form.action = "/Usuarios/Create";
+            form.reset();
+            document.getElementById("UsuarioId").value = "";
+            document.getElementById("usuarioModalLabel").innerText = "Nuevo Usuario";
+            // Aquí no hace falta limpiar mensajes de error
+        }
+
+        function abrirModalEdicion(usuario) {
+            const form = document.getElementById("formUsuario");
+            form.action = `/Usuarios/Edit/${usuario.usuarioId}`;
+            document.getElementById("UsuarioId").value = usuario.usuarioId;
+            form.Nombre.value = usuario.nombre;
+            form.Correo.value = usuario.correo;
+            form.Password.value = usuario.password;
+            form.Telefono.value = usuario.telefono;
+            form.Direccion.value = usuario.direccion;
+            form.Rol.value = usuario.rol;
+            document.getElementById("usuarioModalLabel").innerText = "Editar Usuario";
+            new bootstrap.Modal(document.getElementById("usuarioModal")).show();
+        }
+
+        //---------------------------------------
+            function abrirModalEliminar(usuario) {
+            const form = document.getElementById("formEliminarUsuario");
+            form.action = `/Usuarios/Delete/${usuario.usuarioId}`;
+            document.getElementById("mensajeEliminarUsuario").innerText =
+                `¿Estás seguro de que deseas eliminar al usuario "${usuario.nombre}"?`;
+            new bootstrap.Modal(document.getElementById("confirmarEliminacionModal")).show();
+        }
+
+        //---------------------------------------
+
     </script>
 
-    <!-- React embebido -->
+
+
     <script type="text/babel">
         function TablaUsuarios({ data }) {
-            const [filtro, setFiltro] = React.useState("");
-
-            const usuariosFiltrados = data.filter(u =>
-                (u.nombre + u.email + u.telefono + u.rol + u.direccion)
-                    .toLowerCase()
-                    .includes(filtro.toLowerCase())
-            );
-
             return (
-                <div className="card shadow-sm">
-                    <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                        <h5 className="mb-0">Lista de Usuarios</h5>
-                        <div className="input-group w-25">
-                            <input className="form-control form-control-sm"
-                                   placeholder="Buscar..."
-                                   onChange={e => setFiltro(e.target.value)} />
-                            <button className="btn btn-outline-light btn-sm">
-                                <i className="fas fa-search"></i>
-                            </button>
-                        </div>
+                <div className="card shadow">
+                    <div className="card-header bg-dark text-white">
+                        Lista de Usuarios
                     </div>
-                    <div className="card-body">
-                        <div className="table-responsive shadow rounded-3 bg-white">
-                            <table className="table table-hover table-striped mb-0">
-                                <thead className="table-primary">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
-                                        <th>Teléfono</th>
-                                        <th>Rol</th>
-                                        <th>Dirección</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {usuariosFiltrados.map(usuario => (
-                                        <tr key={usuario.id_usuario}>
-                                            <td>{usuario.id_usuario}</td>
-                                            <td>{usuario.nombre}</td>
-                                            <td>{usuario.email}</td>
-                                            <td>{usuario.telefono}</td>
-                                            <td>{usuario.rol}</td>
-                                            <td>{usuario.direccion}</td>
-                                            <td>
-                                                <a className="btn btn-sm btn-outline-info" href="/productos" title="Ver detalles">
-                                                    <i className="fas fa-eye"></i>
-                                                </a>
-                                                <button type="button" className="btn btn-sm btn-outline-warning me-1"
-                                                    data-bs-toggle="modal" data-bs-target="#nuevoUsuarioModal">
-                                                    <i className="fas fa-edit"></i>
+                    <div className="card-body table-responsive">
+                        <table className="table table-bordered table-hover">
+                            <thead className="table-primary">
+                                <tr>
+                                   
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Teléfono</th>
+                                    <th>Rol</th>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map(usuario => (
+                                    <tr key={usuario.usuarioId}>
+                                      
+                                        <td>{usuario.nombre}</td>
+                                        <td>{usuario.correo}</td>
+                                        <td>{usuario.telefono}</td>
+                                        <td>{usuario.rol}</td>
+                                        <td>{usuario.direccion}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-sm btn-warning me-1"
+                                                onClick={() => abrirModalEdicion(usuario)}>
+                                                <i className="fas fa-edit"></i>
+                                            </button>
+                                            <form
+                                                method="post"
+                                                action={`/Usuarios/Delete/${usuario.usuarioId}`}
+                                                style={{ display: "inline" }}>
+                                                @Html.AntiForgeryToken()
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-sm btn-danger" 
+                                                     onClick={() => abrirModalEliminar(usuario)}>
+                                                    <i className="fas fa-trash"></i>
                                                 </button>
-                                                <a className="btn btn-sm btn-outline-danger"
-                                                    href={`/usuarios/eliminar/${usuario.id_usuario}`}>
-                                                    <i className="fas fa-trash-alt"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div className="card-footer bg-light">
-                        <small className="text-muted">Total usuarios: {usuariosFiltrados.length}</small>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             );
@@ -116,8 +203,6 @@
         const root = ReactDOM.createRoot(document.getElementById("usuarios-react"));
         root.render(<TablaUsuarios data={usuarios} />);
     </script>
+}
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
