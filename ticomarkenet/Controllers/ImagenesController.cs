@@ -172,5 +172,9 @@ namespace ticomarkenet.Controllers
         {
             return _context.Imagenes.Any(e => e.ImagenId == id);
         }
+        public IActionResult IndexI()
+        {
+            return View();
+        }
     }
 }

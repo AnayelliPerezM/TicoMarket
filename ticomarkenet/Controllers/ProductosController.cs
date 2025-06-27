@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ticomarkenet.Data;
 using ticomarkenet.Models;
+using System.Text.Json;
 
 namespace ticomarkenet.Controllers
 {
@@ -20,7 +21,7 @@ namespace ticomarkenet.Controllers
         }
 
         // GET: Productoes de prueba
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexC()
         {
             var appDbContext = _context.Productos.Include(p => p.Usuario);
             return View(await appDbContext.ToListAsync());
@@ -160,5 +161,35 @@ namespace ticomarkenet.Controllers
         {
             return _context.Productos.Any(e => e.ProductoId == id);
         }
+   
+        public IActionResult GestionProducto()
+        {
+            return View();
+        }
+        public IActionResult Index()
+        {
+            return View();
+        }
+     // Asegúrate de tener esta referencia arriba
+
+public IActionResult Detalles(int id)
+    {
+        var producto = _context.Productos.Include(p => p.Usuario).FirstOrDefault(p => p.ProductoId == id);
+        if (producto == null)
+        {
+            return NotFound();
+        }
+
+        var relacionados = _context.Productos
+            .Where(p => p.Categoria == producto.Categoria && p.ProductoId != id)
+            .ToList();
+
+        ViewData["ProductoJson"] = JsonSerializer.Serialize(producto);
+        ViewData["RelacionadosJson"] = JsonSerializer.Serialize(relacionados);
+
+        return View();
     }
+
+
+}
 }
