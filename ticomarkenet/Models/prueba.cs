@@ -1,6 +1,6 @@
 ﻿namespace ticomarkenet.Models
 {
-    public class prueba
+    public class Prueba
     {
     }
 }

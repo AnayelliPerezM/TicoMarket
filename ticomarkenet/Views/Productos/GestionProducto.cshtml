@@ -1,0 +1,142 @@
+﻿@using System.Collections.Generic;
+@using ticomarkenet.Models;
+@model ticomarkenet.ViewModels.ProductoGestionViewModel
+@{
+    ViewData["Title"] = "Gestión de Productos - TicoMarket";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Bootstrap y FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <script src="https://kit.fontawesome.com/a2e0e6a676.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <main class="container py-5">
+        <div id="react-productos"></div>
+    </main>
+
+    <partial name="fragments/_Footer" />
+
+    <!-- React + Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- Datos serializados -->
+    <script>
+        const productos = @Html.Raw(Json.Serialize(Model?.Productos ?? new List<Producto>()));
+        const usuarios = @Html.Raw(Json.Serialize(Model?.Usuarios ?? new List<Usuario>()));
+    </script>
+
+    <!-- Componente React -->
+    <script type="text/babel">
+        const ProductosAdmin = ({ productos, usuarios }) => (
+            <>
+                <div className="row mb-4">
+                    <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <h1 className="h2 text-primary">
+                                <i className="fas fa-boxes me-2"></i> Gestión de Productos
+                            </h1>
+                            <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto">
+                                <i className="fas fa-plus me-2"></i>Agregar Producto
+                            </button>
+                        </div>
+                        <p className="text-muted">Administra los productos disponibles en TicoMarket</p>
+                    </div>
+                </div>
+
+                <div className="card shadow-sm">
+                    <div className="card-header bg-dark text-white">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <h5 className="mb-0">Lista de Productos</h5>
+                            <div className="input-group w-25">
+                                <input type="text" className="form-control form-control-sm" placeholder="Buscar..." id="searchInput" />
+                                <button className="btn btn-outline-light btn-sm" type="button">
+                                    <i className="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="card-body">
+                        <div className="table-responsive">
+                            <table className="table table-hover align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Descripción</th>
+                                        <th className="text-end">Precio</th>
+                                        <th>Categoría</th>
+                                        <th>Usuario</th>
+                                        <th className="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {productos.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="7" className="text-center text-muted py-4">
+                                                No hay productos registrados
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        productos.map(producto => (
+                                            <tr key={producto.id_producto}>
+                                                <td>
+                                                    <img
+                                                        src={producto.imagenes?.[0]?.url || '/assets/img/default-product.jpg'}
+                                                        alt="Imagen producto"
+                                                        className="img-thumbnail"
+                                                        style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                                                    />
+                                                </td>
+                                                <td>{producto.nombre}</td>
+                                                <td><small className="text-muted">{producto.descripcion?.substring(0, 30)}...</small></td>
+                                                <td className="text-end fw-bold text-primary">₡ {parseFloat(producto.precio).toFixed(2)}</td>
+                                                <td><span className="badge bg-info">{producto.categoria}</span></td>
+                                                <td>{producto.usuario?.nombre || 'Sin usuario'}</td>
+                                                <td className="text-center">
+                                                    <a className="btn btn-sm btn-outline-info" href={`/producDetalle/${producto.id_producto}`} title="Ver detalles">
+                                                        <i className="fas fa-eye"></i>
+                                                    </a>
+                                                    <button className="btn btn-sm btn-outline-warning btn-editar ms-1" data-id={producto.id_producto} title="Editar">
+                                                        <i className="fas fa-edit"></i>
+                                                    </button>
+                                                    <a href={`/productos/eliminar/${producto.id_producto}`} className="btn btn-sm btn-outline-danger ms-1" title="Eliminar" onClick={e => { if (!confirm('¿Estás seguro de eliminar este producto?')) e.preventDefault(); }}>
+                                                        <i className="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="card-footer bg-light d-flex justify-content-between align-items-center">
+                        <small className="text-muted">Mostrando {productos.length} productos</small>
+                        <nav>
+                            <ul className="pagination pagination-sm mb-0">
+                                <li className="page-item disabled"><a className="page-link">Anterior</a></li>
+                                <li className="page-item active"><a className="page-link">1</a></li>
+                                <li className="page-item"><a className="page-link">2</a></li>
+                                <li className="page-item"><a className="page-link">3</a></li>
+                                <li className="page-item"><a className="page-link">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('react-productos'));
+        root.render(<ProductosAdmin productos={productos} usuarios={usuarios} />);
+    </script>
+</body>
+</html>
