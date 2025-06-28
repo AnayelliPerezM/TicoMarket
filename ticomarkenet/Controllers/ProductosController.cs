@@ -50,12 +50,9 @@ namespace ticomarkenet.Controllers
         public IActionResult Create()
         {
 
-            ViewData["UsuarioId"] = new SelectList(
-    _context.Usuarios.Select(u => new { u.UsuarioId, Nombre = u.Nombre }),
-    "UsuarioId", "Nombre");
+            ViewData["UsuarioId"] = new SelectList(_context.Usuarios.Select(u => new { u.UsuarioId, Nombre = u.Nombre }),
+            "UsuarioId", "Nombre");
 
-            //ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId");
-            //var productos = _context.Productos.Include(p => p.Usuario).ToList();
             return View();
         }
 
@@ -123,7 +120,7 @@ namespace ticomarkenet.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Vista");
             }
             ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", producto.UsuarioId);
             return View(producto);
@@ -160,7 +157,7 @@ namespace ticomarkenet.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Vista");
         }
 
         private bool ProductoExists(int id)
@@ -204,6 +201,9 @@ public IActionResult Detalles(int id)
 
         return View();
     }
+
+
+        //Creado para guardar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Guardar(

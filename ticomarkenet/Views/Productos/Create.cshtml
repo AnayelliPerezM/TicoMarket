@@ -28,8 +28,16 @@
                     </div>
 
                     <div class="mb-2">
-                        <label asp-for="Categoria" class="form-label small"></label>
-                        <input asp-for="Categoria" class="form-control form-control-sm" required />
+                        <label asp-for="Categoria" class="form-label small">Categoría</label>
+                        <select asp-for="Categoria" class="form-select form-select-sm" required>
+                            <option value="">-- Seleccione una categoría --</option>
+                            <option value="Electrónica">Electrónica</option>
+                            <option value="Ropa">Ropa</option>
+                            <option value="Hogar">Hogar</option>
+                            <option value="Juguetes">Juguetes</option>
+                            <option value="Deportes">Deportes</option>
+                        </select>
+                        <span asp-validation-for="Categoria" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
