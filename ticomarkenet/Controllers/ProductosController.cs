@@ -21,7 +21,7 @@ namespace ticomarkenet.Controllers
         }
 
         // GET: Productoes de prueba
-        public async Task<IActionResult> IndexC()
+        public async Task<IActionResult> Index()
         {
             var appDbContext = _context.Productos.Include(p => p.Usuario);
             return View(await appDbContext.ToListAsync());
@@ -49,7 +49,13 @@ namespace ticomarkenet.Controllers
         // GET: Productoes/Create
         public IActionResult Create()
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId");
+
+            ViewData["UsuarioId"] = new SelectList(
+    _context.Usuarios.Select(u => new { u.UsuarioId, Nombre = u.Nombre }),
+    "UsuarioId", "Nombre");
+
+            //ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId");
+            //var productos = _context.Productos.Include(p => p.Usuario).ToList();
             return View();
         }
 
@@ -166,7 +172,7 @@ namespace ticomarkenet.Controllers
         {
             return View();
         }
-        public IActionResult Index()
+        public IActionResult Vista()
         {
             return View();
         }
@@ -189,7 +195,97 @@ public IActionResult Detalles(int id)
 
         return View();
     }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Guardar(
+            [Bind("ProductoId,Nombre,Descripcion,Precio,Categoria,UsuarioId")] Producto producto,
+            IFormFile[] files,
+            [FromForm(Name = "imagenesParaEliminar")] string imagenesParaEliminarJson)
+        {
+            try
+            {
+                var nuevasImagenes = new List<Imagen>();
+                var imagenesExistentes = new List<Imagen>();
+
+                // EDICIÓN: recuperar producto existente
+                if (producto.ProductoId != 0)
+                {
+                    var productoExistente = await _context.Productos
+                        .Include(p => p.Imagenes)
+                        .FirstOrDefaultAsync(p => p.ProductoId == producto.ProductoId);
+
+                    if (productoExistente != null)
+                    {
+                        imagenesExistentes = productoExistente.Imagenes?.ToList() ?? new List<Imagen>();
+
+                        if (!string.IsNullOrEmpty(imagenesParaEliminarJson))
+                        {
+                            var idsEliminar = JsonSerializer.Deserialize<List<int>>(imagenesParaEliminarJson);
+                            var imagenesAEliminar = _context.Imagenes
+                                .Where(img => idsEliminar.Contains(img.ImagenId))
+                                .ToList();
+
+                            _context.Imagenes.RemoveRange(imagenesAEliminar);
+                            await _context.SaveChangesAsync();
+
+                            imagenesExistentes.RemoveAll(img => idsEliminar.Contains(img.ImagenId));
+                        }
+                    }
+                }
+
+                // SUBIDA DE IMÁGENES NUEVAS
+                if (files != null && files.Length > 0)
+                {
+                    var rutaRaiz = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes");
+                    Directory.CreateDirectory(rutaRaiz); // Crea si no existe
+
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var nombreArchivo = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+                            var rutaCompleta = Path.Combine(rutaRaiz, nombreArchivo);
+
+                            using var stream = new FileStream(rutaCompleta, FileMode.Create);
+                            await file.CopyToAsync(stream);
+
+                            nuevasImagenes.Add(new Imagen
+                            {
+                                Ruta = "/imagenes/" + nombreArchivo,
+                                Producto = producto
+                            });
+                        }
+                    }
+                }
+
+                producto.Imagenes = imagenesExistentes.Concat(nuevasImagenes).ToList();
+
+                if (producto.ProductoId == 0)
+                {
+                    _context.Productos.Add(producto);
+                    TempData["Mensaje"] = "Producto creado correctamente.";
+                }
+                else
+                {
+                    _context.Productos.Update(producto);
+                    TempData["Mensaje"] = "Producto actualizado correctamente.";
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Vista");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al guardar: " + ex.Message);
+                ModelState.AddModelError(string.Empty, "Ocurrió un error al guardar el producto.");
+                ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", producto.UsuarioId);
+                return View("Vista", producto);
+            }
+        }
 
 
-}
+
+
+
+    }
 }

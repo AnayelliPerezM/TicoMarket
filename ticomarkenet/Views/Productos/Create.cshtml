@@ -1,52 +1,77 @@
 ﻿@model ticomarkenet.Models.Producto
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Producto";
 }
 
-<h1>Create</h1>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm p-4 w-100" style="max-width: 800px;">
+        <h4 class="text-center mb-4">@ViewData["Title"]</h4>
 
-<h4>Producto</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+        <div class="row">
+            <!-- Columna izquierda: formulario -->
+            <div class="col-md-6">
+                <form asp-action="Guardar" class="needs-validation" novalidate>
+                    <div class="mb-2">
+                        <label asp-for="Nombre" class="form-label small"></label>
+                        <input asp-for="Nombre" class="form-control form-control-sm" required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Descripcion" class="form-label small"></label>
+                        <textarea asp-for="Descripcion" class="form-control form-control-sm" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Precio" class="form-label small"></label>
+                        <input asp-for="Precio" class="form-control form-control-sm" type="number" min="0" step="0.01" required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Categoria" class="form-label small"></label>
+                        <input asp-for="Categoria" class="form-control form-control-sm" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UsuarioId" class="form-label small">Usuario</label>
+                        <select asp-for="UsuarioId" class="form-select form-select-sm" asp-items="ViewBag.UsuarioId" required>
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                        <a asp-action="Vista" class="btn btn-secondary btn-sm">Cancelar</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
+
+            <!-- Columna derecha: imagen -->
+            <div class="col-md-6 border-start">
+                <div class="mb-3">
+                    <label class="form-label small">Subir imagen</label>
+                    <input type="file" name="imagen" class="form-control form-control-sm" accept="image/*" />
+                </div>
+                
             </div>
-            <div class="form-group">
-                <label asp-for="Precio" class="control-label"></label>
-                <input asp-for="Precio" class="form-control" />
-                <span asp-validation-for="Precio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Categoria" class="control-label"></label>
-                <input asp-for="Categoria" class="form-control" />
-                <span asp-validation-for="Categoria" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 }
