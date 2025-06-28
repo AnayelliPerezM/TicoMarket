@@ -67,9 +67,10 @@ namespace ticomarkenet.Controllers
             {
                 _context.Add(producto);
                 await _context.SaveChangesAsync();
+                ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", producto.UsuarioId);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", producto.UsuarioId);
+           
             return View(producto);
         }
 
@@ -169,22 +170,33 @@ namespace ticomarkenet.Controllers
         {
             return View();
         }
-        public IActionResult Vista(){
+        //
+
+      
+        //  
+       
+
+        public IActionResult Vista()
+        {
+            ViewBag.Usuarios = _context.Usuarios
+                .Select(u => new SelectListItem
+                {
+                    Value = u.UsuarioId.ToString(),
+                    Text = u.Nombre
+                }).ToList();
+
+            // 🔧 Ahora sí se cargan las imágenes
             var productos = _context.Productos
-           .Select(p => new Producto
-           {
-               ProductoId = p.ProductoId,
-               Nombre = p.Nombre,
-               Precio = p.Precio,
-               Categoria = p.Categoria
-           })
-           .ToList();
+                .Include(p => p.Imagenes)
+                .ToList();
 
             return View(productos);
         }
-     // Asegúrate de tener esta referencia arriba
 
-public IActionResult Detalles(int id)
+
+        // Asegúrate de tener esta referencia arriba
+
+        public IActionResult Detalles(int id)
     {
         var producto = _context.Productos.Include(p => p.Usuario).FirstOrDefault(p => p.ProductoId == id);
         if (producto == null)
@@ -288,7 +300,23 @@ public IActionResult Detalles(int id)
                 Console.WriteLine("Error al guardar: " + ex.Message);
                 ModelState.AddModelError(string.Empty, "Ocurrió un error al guardar el producto.");
                 ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "UsuarioId", producto.UsuarioId);
-                return View("Vista", producto);
+                //return View("Vista", producto);
+                //-------------------------------------------------
+                // Recargar productos + usuarios para la vista
+                ViewBag.Usuarios = _context.Usuarios
+                    .Select(u => new SelectListItem
+                    {
+                        Value = u.UsuarioId.ToString(),
+                        Text = u.Nombre
+                    }).ToList();
+
+                var productos = _context.Productos
+                    .Include(p => p.Imagenes)
+                    .ToList();
+
+                return View("Vista", productos);
+
+                //-------------------------------------------------
             }
         }
 

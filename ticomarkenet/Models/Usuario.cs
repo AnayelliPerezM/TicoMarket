@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace ticomarkenet.Models
 {
@@ -9,19 +10,17 @@ namespace ticomarkenet.Models
        
         public string Nombre { get; set; }
 
-      
         public string Correo { get; set; }
 
-       
         public string Password { get; set; }
         public string Telefono { get; set; }
         public string Direccion { get; set; }
 
-      
         public string Rol { get; set; }
 
 
         // Relación con Producto
-        public List<Producto> Productos { get; set; }
+        //[BindNever]
+       // public List<Producto> Productos { get; set; }
     }
 }

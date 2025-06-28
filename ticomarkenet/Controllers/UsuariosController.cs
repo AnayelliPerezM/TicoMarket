@@ -60,11 +60,51 @@ namespace ticomarkenet.Controllers
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                
+
             }
+            TempData["Mensaje"] = "Usuario creado correctamente.";
             return View(usuario);
         }
 
+        //save--------------------------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Guardar([Bind("UsuarioId,Nombre,Correo,Password,Telefono,Direccion,Rol")] Usuario usuario)
+        {
+            if (!ModelState.IsValid)
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($"Campo: {key} - Error: {error.ErrorMessage}");
+                    }
+                }
 
+                TempData["Error"] = "Error en los datos. Revisa los campos.";
+                return RedirectToAction("Index");
+            }
+
+            if (usuario.UsuarioId == 0)
+            {
+                _context.Usuarios.Add(usuario);
+                TempData["Mensaje"] = "Usuario creado correctamente.";
+            }
+            else
+            {
+                _context.Usuarios.Update(usuario);
+                TempData["Mensaje"] = "Usuario actualizado correctamente.";
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+
+
+        //save--------------------------------------
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

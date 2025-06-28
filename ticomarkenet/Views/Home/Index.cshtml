@@ -125,7 +125,7 @@
                                 <div className="ratio ratio-4x3 bg-light">
                                     <img
                                         src={producto.Imagenes && producto.Imagenes.length > 0
-                                           ? `/imagenes/${producto.Imagenes[0].Ruta}`
+                                          ? producto.Imagenes[0].Ruta
                                            : "/imagenes/default.jpg"}
                                         alt={producto.Nombre}
                                         className="img-fluid p-3 object-fit-contain"
