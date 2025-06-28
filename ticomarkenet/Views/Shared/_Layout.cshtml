@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ticomarkenet.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+    @RenderSection("Styles", required: false)
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- React y Babel -->
+    <!-- React y Babel para desarrollo -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -68,15 +70,24 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Home" asp-action="Nosotros">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Home" asp-action="Contacto">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Productos" asp-action="Index">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Imagenes" asp-action="IndexI">Imágenes</a></li>
-                    <li class="nav-item"><a class="nav-link text-black" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
-                </ul>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Contacto">Contacto</a>
+                        </li>
+                          <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Productos" asp-action="Vista">Producto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Imagenes" asp-action="IndexI">Imagen</a>
+                        </li>
+                    </ul>
 
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">

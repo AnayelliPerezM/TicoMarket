@@ -14,6 +14,6 @@ namespace ticomarkenet.Models
         public Usuario? Usuario { get; set; }
 
         // Relación con Imagen
-        public List<Imagen> Imagenes { get; set; }
+        public List<Imagen> Imagenes { get; set; } = new List<Imagen>();
     }
 }

@@ -22,6 +22,6 @@ namespace ticomarkenet.Models
 
 
         // Relación con Producto
-       // public List<Producto> Productos { get; set; }
+        public List<Producto> Productos { get; set; }
     }
 }

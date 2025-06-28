@@ -1,38 +1,80 @@
-﻿@model ticomarkenet.Models.Imagen
+﻿@model ticomarkenet.Models.Producto
 
 @{
-    ViewData["Title"] = "Crear Imágenes";
+    ViewData["Title"] = "Crear Producto";
 }
 
-<h1>Subir Imágenes</h1>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm p-4 w-100" style="max-width: 800px;">
+        <h4 class="text-center mb-4">@ViewData["Title"]</h4>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div class="form-group mb-3">
-                <label class="form-label">Seleccionar imágenes</label>
-                <input type="file" name="archivos" class="form-control" accept="image/*" multiple required />
-                <small class="form-text text-muted">Puedes seleccionar varias imágenes manteniendo presionada Ctrl o Shift.</small>
+        <div class="row">
+            <!-- Columna izquierda: formulario -->
+            <div class="col-md-6">
+                <form asp-action="Create" class="needs-validation" novalidate>
+                    <div class="mb-2">
+                        <label asp-for="Nombre" class="form-label small"></label>
+                        <input asp-for="Nombre" class="form-control form-control-sm" required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Descripcion" class="form-label small"></label>
+                        <textarea asp-for="Descripcion" class="form-control form-control-sm" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Precio" class="form-label small"></label>
+                        <input asp-for="Precio" class="form-control form-control-sm" type="number" min="0" step="0.01" required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="Categoria" class="form-label small"></label>
+                        <input asp-for="Categoria" class="form-control form-control-sm" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UsuarioId" class="form-label small">Usuario</label>
+                        <select asp-for="UsuarioId" class="form-select form-select-sm" asp-items="ViewBag.UsuarioId" required>
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                        <a asp-action="Index" class="btn btn-secondary btn-sm">Cancelar</a>
+                    </div>
+                </form>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ProductoId" class="form-label">Producto</label>
-                <select asp-for="ProductoId" class="form-select" asp-items="ViewBag.ProductoId"></select>
+            <!-- Columna derecha: imagen -->
+            <div class="col-md-6 border-start">
+                <div class="mb-3">
+                    <label class="form-label small">Subir imagen</label>
+                    <input type="file" name="imagen" class="form-control form-control-sm" accept="image/*" />
+                </div>
+                <div class="text-center mt-3">
+                    <img src="https://via.placeholder.com/150" class="img-fluid rounded border" alt="Vista previa" />
+                    <p class="small text-muted mt-2">Vista previa de la imagen</p>
+                </div>
             </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Subir Imágenes</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div class="mt-3">
-    <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
-</div>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 }
