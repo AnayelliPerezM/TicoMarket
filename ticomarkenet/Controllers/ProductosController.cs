@@ -172,8 +172,12 @@ namespace ticomarkenet.Controllers
         {
             return View();
         }
-        public IActionResult Vista()
-        {
+        public IActionResult Vista(){
+            var productos = _context.Productos
+             .Select(p => new { p.ProductoId, p.Nombre, p.Precio, p.Categoria }) // Solo lo necesario
+             .Take(10) 
+             .ToList();
+
             return View();
         }
      // Asegúrate de tener esta referencia arriba
