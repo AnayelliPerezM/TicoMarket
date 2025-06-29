@@ -1,1 +1,103 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Registro";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Registrarse</h2>
+    <div id="registro-react"></div>
+</div>
+
+<!-- CDN de React y ReactDOM -->
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+<!-- Babel para permitir JSX directo en navegador -->
+@Html.Raw("<script src=\"https://unpkg.com/@babel/standalone/babel.min.js\"></script>")
+
+
+<!-- Tu componente React embebido -->
+<script type="text/babel">
+    const { useState } = React;
+
+    function RegistroUsuario() {
+        const [formData, setFormData] = useState({
+            nombre: '', correo: '', password: '', telefono: '', direccion: ''
+        });
+        const [mensaje, setMensaje] = useState('');
+        const [errores, setErrores] = useState({});
+
+        const handleChange = (e) => {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        };
+
+        const validar = () => {
+            let e = {};
+            if (!formData.nombre) e.nombre = "Requerido";
+            if (!formData.correo) e.correo = "Requerido";
+            if (!formData.password) e.password = "Requerido";
+            return e;
+        };
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            const val = validar();
+            if (Object.keys(val).length > 0) {
+                setErrores(val);
+                return;
+            }
+
+            const usuario = { ...formData, rol: "VEN" };
+
+            const res = await fetch('/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            });
+
+            if (res.ok) {
+                setMensaje("Usuario registrado correctamente");
+                setFormData({ nombre: '', correo: '', password: '', telefono: '', direccion: '' });
+            } else {
+                setMensaje("Error al registrar usuario");
+            }
+        };
+
+        return (
+            <form onSubmit={handleSubmit} className="mx-auto" style={{ maxWidth: 500 }}>
+                {mensaje && <div className="alert alert-info">{mensaje}</div>}
+                <div className="mb-3">
+                    <label>Nombre</label>
+                    <input name="nombre" className="form-control" value={formData.nombre} onChange={handleChange} />
+                    {errores.nombre && <small className="text-danger">{errores.nombre}</small>}
+                </div>
+
+                <div className="mb-3">
+                    <label>Correo</label>
+                    <input name="correo" type="email" className="form-control" value={formData.correo} onChange={handleChange} />
+                    {errores.correo && <small className="text-danger">{errores.correo}</small>}
+                </div>
+
+                <div className="mb-3">
+                    <label>Contraseña</label>
+                    <input name="password" type="password" className="form-control" value={formData.password} onChange={handleChange} />
+                    {errores.password && <small className="text-danger">{errores.password}</small>}
+                </div>
+
+                <div className="mb-3">
+                    <label>Teléfono</label>
+                    <input name="telefono" className="form-control" value={formData.telefono} onChange={handleChange} />
+                </div>
+
+                <div className="mb-3">
+                    <label>Dirección</label>
+                    <input name="direccion" className="form-control" value={formData.direccion} onChange={handleChange} />
+                </div>
+
+                <button className="btn btn-primary w-100" type="submit">Registrarse</button>
+            </form>
+        );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('registro-react'));
+    root.render(<RegistroUsuario />);
+</script>

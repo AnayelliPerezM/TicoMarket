@@ -67,6 +67,31 @@ namespace ticomarkenet.Controllers
             return View(usuario);
         }
 
+        //Registar-------------------------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(Usuario usuario)
+        {
+            if (ModelState.IsValid)
+            {
+                usuario.Rol = "VEN"; // asignación automática
+                _context.Usuarios.Add(usuario);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Login", "Auth");
+            }
+
+            return View(usuario);
+        }
+
+
+
+
+
+
+
+
+
+
         //save--------------------------------------
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -198,6 +223,8 @@ namespace ticomarkenet.Controllers
         {
             return View();
         }
+
+
 
     }
 }

@@ -319,6 +319,14 @@ namespace ticomarkenet.Controllers
                 //-------------------------------------------------
             }
         }
+        public IActionResult Shop() {
+            var productos = _context.Productos
+          .Include(p => p.Imagenes)
+          .ToList();
+
+            return View(productos);
+
+        }
 
 
 
