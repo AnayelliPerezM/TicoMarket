@@ -175,12 +175,32 @@ namespace ticomarkenet.Controllers
         }
         //
 
-      
-        //  
-       
 
+        //  
+
+
+        //public IActionResult Vista()
+        //{
+        //    ViewBag.Usuarios = _context.Usuarios
+        //        .Select(u => new SelectListItem
+        //        {
+        //            Value = u.UsuarioId.ToString(),
+        //            Text = u.Nombre
+        //        }).ToList();
+
+        //    // 🔧 Ahora sí se cargan las imágenes
+        //    var productos = _context.Productos
+        //        .Include(p => p.Imagenes)
+        //        .ToList();
+
+        //    return View(productos);
+        //}
+        [Authorize(Roles = "ADMIN,VEN")]
         public IActionResult Vista()
         {
+            var rol = HttpContext.Session.GetString("Rol");
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
             ViewBag.Usuarios = _context.Usuarios
                 .Select(u => new SelectListItem
                 {
@@ -188,13 +208,31 @@ namespace ticomarkenet.Controllers
                     Text = u.Nombre
                 }).ToList();
 
-            // 🔧 Ahora sí se cargan las imágenes
-            var productos = _context.Productos
-                .Include(p => p.Imagenes)
-                .ToList();
+            List<Producto> productos;
+
+            if (rol == "VEN" && usuarioId.HasValue)
+            {
+
+                productos = _context.Productos
+                    .Include(p => p.Imagenes)
+                    .Where(p => p.UsuarioId == usuarioId.Value)
+                    .ToList();
+            }
+            else
+            {
+
+                productos = _context.Productos
+                    .Include(p => p.Imagenes)
+                    .ToList();
+            }
+
+
+
 
             return View(productos);
         }
+
+
 
 
         // Asegúrate de tener esta referencia arriba

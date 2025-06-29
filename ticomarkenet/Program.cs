@@ -19,7 +19,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Usuarios/AccessDenied";
     });
 
+
 builder.Services.AddAuthorization();
+//--------------------------------------------------
+builder.Services.AddSession(); // <-- ¡Esto es obligatorio!
+//--------------------------------------------------
 
 var app = builder.Build();
 
@@ -37,6 +41,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
+//-------------------------------------------------------
+app.UseSession(); // <-- ¡También obligatorio!
+//-------------------------------------------------------
 app.UseAuthentication(); // ? ¡NO TE OLVIDES!
 app.UseAuthorization();
 
