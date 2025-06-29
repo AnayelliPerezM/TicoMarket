@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ticomarkenet.Data;
 using ticomarkenet.Models;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ticomarkenet.Controllers
 {
@@ -21,6 +22,7 @@ namespace ticomarkenet.Controllers
         }
 
         // GET: Productoes de prueba
+        [Authorize(Roles = "ADMIN,VEN")]
         public async Task<IActionResult> Index()
         {
             var appDbContext = _context.Productos.Include(p => p.Usuario);
@@ -47,6 +49,7 @@ namespace ticomarkenet.Controllers
         }
 
         // GET: Productoes/Create
+    
         public IActionResult Create()
         {
 

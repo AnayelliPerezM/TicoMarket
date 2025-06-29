@@ -71,32 +71,67 @@
             </button>
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                   @* inicio *@
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Contacto">Contacto</a>
+                    </li>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @* Todos los autenticados pueden ver Productos *@
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Contacto">Contacto</a>
-                        </li>
-                          <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Productos" asp-action="Vista">Producto</a>
+                            <a class="nav-link text-dark" asp-controller="Productos" asp-action="Vista">Productos</a>
                         </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
-                    </li>
-                    </ul>
-
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-black d-flex align-items-center" asp-controller="Usuarios" asp-action="Login">
-                            <i class="fas fa-user me-2"></i> Iniciar Sesión
-                        </a>
-                    </li>
+                        @* Solo el rol ADMIN puede ver Usuarios *@
+                        @if (User.IsInRole("ADMIN"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                            </li>
+                        }
+                    }
                 </ul>
+
+                   @* fin *@
+
+
+              @* inicio  *@
+                <ul class="navbar-nav ms-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-black" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i> @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <form asp-controller="Usuarios" asp-action="Logout" method="post" class="dropdown-item">
+                                        <button type="submit" class="btn btn-link text-dark p-0 m-0 w-100 text-start">Cerrar sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-black d-flex align-items-center" asp-controller="Usuarios" asp-action="Login">
+                                <i class="fas fa-user me-2"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+
+              @* fin  *@
             </div>
         </div>
     </nav>

@@ -1,25 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using ticomarkenet.Data;
 using ticomarkenet.Models;
+using Microsoft.AspNetCore.Authorization;
+
+
 
 namespace ticomarkenet.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly AppDbContext _context;
 
+        private readonly AppDbContext _context;
+      
         public UsuariosController(AppDbContext context)
         {
             _context = context;
         }
 
         // GET: Usuarios
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Usuarios.ToListAsync());
@@ -57,13 +66,17 @@ namespace ticomarkenet.Controllers
         {
             if (ModelState.IsValid)
             {
+                //usuario.Rol = "VEN";
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
+
+                TempData["Mensaje"] = "Usuario creado correctamente.";
                 return RedirectToAction(nameof(Index));
                 
 
             }
-            TempData["Mensaje"] = "Usuario creado correctamente.";
+          
+            ViewBag.Error = "Error al registrar el usuario.";
             return View(usuario);
         }
 
@@ -105,6 +118,7 @@ namespace ticomarkenet.Controllers
 
 
         //save--------------------------------------
+       
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -194,10 +208,57 @@ namespace ticomarkenet.Controllers
             return _context.Usuarios.Any(e => e.UsuarioId == id);
         }
 
+       
+        //------------------------------------------------------------
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Login(Usuario model)
+        {
+            var usuario = _context.Usuarios
+                .FirstOrDefault(u => u.Correo == model.Correo && u.Password == model.Password);
+
+            if (usuario != null)
+            {
+                var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, usuario.Nombre),
+                new Claim(ClaimTypes.Email, usuario.Correo),
+                new Claim(ClaimTypes.Role, usuario.Rol),
+                new Claim("UsuarioId", usuario.UsuarioId.ToString())
+            };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Credenciales inválidas");
+            return View(model);
+        }
+
+        //----------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
+        //------------------------------------------------------------
     }
 }
