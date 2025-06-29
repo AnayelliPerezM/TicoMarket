@@ -327,7 +327,31 @@ namespace ticomarkenet.Controllers
             return View(productos);
 
         }
+        //Aquí es para la pagina Detalle-------------------------------------------------------
 
+        public IActionResult Detalle(int id)
+        {
+            // Obtener el producto con sus imágenes y usuario
+            var producto = _context.Productos
+                .Include(p => p.Imagenes)
+                .Include(p => p.Usuario)
+                .FirstOrDefault(p => p.ProductoId == id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            // Opcional: obtener productos relacionados (por categoría o los últimos agregados)
+            var relacionados = _context.Productos
+                .Where(p => p.ProductoId != id) // excluye el actual
+                .Take(6)
+                .ToList();
+
+            ViewBag.Relacionados = relacionados;
+
+            return View(producto);
+        }
 
 
 
