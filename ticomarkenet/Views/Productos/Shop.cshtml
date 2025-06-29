@@ -1,0 +1,132 @@
+﻿@model IEnumerable<ticomarkenet.Models.Producto>
+
+@{
+    ViewData["Title"] = "Tienda";
+    var categorias = new[] { "Todo", "Electrónica", "Ropa", "Hogar", "Juguetes", "Deportes" };
+}
+
+<style>
+    .dashboard-container {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .sidebar {
+        width: 200px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        height: fit-content;
+    }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            text-align: left;
+            border: none;
+            background: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+            .sidebar button:hover,
+            .sidebar button.active {
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+    .product-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .product-card img {
+        height: 180px;
+        object-fit: cover;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .product-card {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        overflow: hidden;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+        .product-card .card-body {
+            padding: 0.75rem;
+            text-align: center;
+        }
+</style>
+
+<div class="container mt-4">
+    <h4 class="mb-4">Tienda</h4>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            @foreach (var cat in categorias)
+            {
+                <button class="filtro-btn" data-cat="@cat">@cat</button>
+            }
+        </div>
+
+        <div class="product-grid" id="contenedor-productos">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    var rutaImagen = p.Imagenes?.FirstOrDefault()?.Ruta ?? "/images/default.jpg";
+
+                    <div class="producto-item product-card" data-cat="@p.Categoria">
+                        <img src="@rutaImagen" alt="@p.Nombre" />
+                        <div class="card-body">
+                            <h6 class="fw-bold">@p.Nombre</h6>
+                            <p class="text-muted small mb-2">$@p.Precio</p>
+                            <a asp-action="Detalle" asp-route-id="@p.ProductoId" class="btn btn-sm btn-outline-success">Ver más</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-warning">No hay productos disponibles.</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const botones = document.querySelectorAll('.filtro-btn');
+            const productos = document.querySelectorAll('.producto-item');
+
+            botones.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cat = btn.getAttribute('data-cat');
+
+                    productos.forEach(p => {
+                        if (cat === 'All' || p.getAttribute('data-cat') === cat) {
+                            p.style.display = 'flex';
+                        } else {
+                            p.style.display = 'none';
+                        }
+                    });
+
+                    botones.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        });
+    </script>
+}

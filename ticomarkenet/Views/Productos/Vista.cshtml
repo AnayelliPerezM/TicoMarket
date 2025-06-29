@@ -1,5 +1,14 @@
 ﻿@model IEnumerable<ticomarkenet.Models.Producto>
 
+    @* inicio *@
+@using System.Security.Claims
+@{
+    var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+    var usuarioId = User.FindFirst("UsuarioId")?.Value;
+}
+
+    @* fin *@
+
 @{
     ViewData["Title"] = "Productos";
 }
@@ -105,12 +114,30 @@
 
 
                     @* inicio *@
+                    <div class="col-md-6">
+                        <label for="UsuarioId" class="form-label">Usuario</label>
 
-                  
+                        @if (rol == "VEN")
+                        {
+                            var vendedorNombre = (ViewBag.Usuarios as List<SelectListItem>)?.FirstOrDefault(u => u.Value == usuarioId)?.Text ?? "Vendedor";
+                            <input type="hidden" name="UsuarioId" id="UsuarioId" value="@usuarioId" />
+                            <input type="text" class="form-control" value="@vendedorNombre" disabled />
+                        }
+                        else
+                        {
+                            <select class="form-select" id="UsuarioId" name="UsuarioId">
+                                @foreach (var usuario in ViewBag.Usuarios as List<SelectListItem>)
+                                {
+                                    <option value="@usuario.Value">@usuario.Text</option>
+                                }
+                            </select>
+                        }
+                    </div>
+
 
                     @* fin *@
 
-                    <div class="col-md-6">
+                    @* <div class="col-md-6">
                         <label for="UsuarioId" class="form-label">Usuario</label>
                         <select class="form-select" id="UsuarioId" name="UsuarioId">
                             @foreach (var usuario in ViewBag.Usuarios as List<SelectListItem>)
@@ -118,7 +145,7 @@
                                 <option value="@usuario.Value">@usuario.Text</option>
                             }
                         </select>
-                    </div>
+                    </div> *@
 
 
                     <div class="col-12">

@@ -1,0 +1,110 @@
+﻿@model ticomarkenet.Models.Producto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/assets/css/slick.css" />
+    <link rel="stylesheet" href="~/assets/css/slick-theme.css" />
+    <style>
+        .rating i {
+            color: gold;
+        }
+
+        .slider-for img {
+            max-height: 400px; /* o el tamaño que prefieras */
+            object-fit: contain;
+            width: 100%;
+        }
+    </style>
+      
+}
+
+@section Scripts {
+    <script src="~/assets/js/jquery-1.11.0.min.js"></script>
+    <script src="~/assets/js/slick.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.slider-for').slick({
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: false,
+                fade: true,
+                asNavFor: '.slider-nav'
+            });
+            $('.slider-nav').slick({
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                asNavFor: '.slider-for',
+                dots: false,
+                centerMode: true,
+                focusOnSelect: true
+            });
+        });
+    </script>
+}
+
+<div class="container mt-5">
+    <div class="mb-3">
+        <a asp-action="Shop" class="btn btn-outline-secondary">
+            ← Volver
+        </a>
+    <div class="row">
+        <!-- Galería de imágenes -->
+        <div class="col-md-6">
+            <div class="slider-for mb-3">
+                @foreach (var img in Model.Imagenes)
+                {
+                    <img src="@img.Ruta" class="img-fluid rounded" alt="Imagen producto" />
+                }
+        
+            </div>
+            <div class="slider-nav">
+                @foreach (var img in Model.Imagenes)
+                {
+                    <img src="@img.Ruta" class="img-thumbnail" style="height: 100px;" />
+                }
+            </div>
+        </div>
+
+        <!-- Detalles del producto -->
+        <div class="col-md-6">
+            <h2>@Model.Nombre</h2>
+            <h4 class="text-success">₡@Model.Precio</h4>
+
+            <div class="rating mb-2">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+            
+            </div>
+
+  
+
+            <p><strong>Descripción:</strong></p>
+            <p>@Model.Descripcion</p>
+
+            
+
+            <p>
+                <strong>Nota:</strong><br />
+                Por este medio te puedes<br />
+                contactar con el vendedor<br />
+       
+            
+            </p>
+
+            <a href="https://wa.me/@Model.Usuario.Telefono" target="_blank" class="btn btn-success btn-lg mt-3">
+                <i class="fab fa-whatsapp"></i> Contactar con @Model.Usuario.Nombre
+            </a>
+
+
+        </div>
+    
+
+    </div>
+</div>

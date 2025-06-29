@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using ticomarkenet.Data; // Asegurate de importar la carpeta correcta
+using ticomarkenet.Data; 
 using ticomarkenet.Models;
 
 namespace ticomarkenet.Controllers
@@ -9,7 +9,7 @@ namespace ticomarkenet.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _context; // Usa tu clase de contexto
+        private readonly AppDbContext _context; 
 
         public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {

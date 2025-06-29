@@ -80,6 +80,34 @@ namespace ticomarkenet.Controllers
             return View(usuario);
         }
 
+        //Registar-------------------------------------
+        [HttpGet]
+        public IActionResult Registro()
+        {
+            return View(); // Renderiza la vista con <div id="registro-react">
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] Usuario usuario)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Datos inválidos");
+            }
+
+            usuario.Rol = "VEN"; // Asignación automática del rol
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Usuario registrado correctamente" });
+        }
+
+
+
+
+
+
+
         //save--------------------------------------
         [HttpPost]
         [ValidateAntiForgeryToken]

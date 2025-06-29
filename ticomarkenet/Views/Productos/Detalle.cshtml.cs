@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ticomarkenet.Views.Productos
 {
-    public class GestionProductoModel : PageModel
+    public class DetalleModel : PageModel
     {
         public void OnGet()
         {

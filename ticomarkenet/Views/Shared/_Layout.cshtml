@@ -77,6 +77,9 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Productos" asp-action="Shop">Shop</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
                     </li>
                     <li class="nav-item">
@@ -89,6 +92,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Productos" asp-action="Vista">Productos</a>
                         </li>
+                 
 
                         @* Solo el rol ADMIN puede ver Usuarios *@
                         @if (User.IsInRole("ADMIN"))

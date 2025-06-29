@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.Tasks;
 using ticomarkenet.Data;
 using ticomarkenet.Models;
-using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
 
 namespace ticomarkenet.Controllers
 {
@@ -25,8 +26,20 @@ namespace ticomarkenet.Controllers
         [Authorize(Roles = "ADMIN,VEN")]
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Productos.Include(p => p.Usuario);
-            return View(await appDbContext.ToListAsync());
+            //var appDbContext = _context.Productos.Include(p => p.Usuario);
+            //return View(await appDbContext.ToListAsync());
+
+            var rol = HttpContext.Session.GetString("Rol");
+            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+            IQueryable<Producto> productos = _context.Productos.Include(p => p.Usuario);
+
+            if (rol == "VEN" && usuarioId.HasValue)
+            {
+                productos = productos.Where(p => p.UsuarioId == usuarioId.Value);
+            }
+
+            return View(await productos.ToListAsync());
         }
 
         // GET: Productoes/Details/5
@@ -173,14 +186,17 @@ namespace ticomarkenet.Controllers
         {
             return View();
         }
-        //
+     
 
 
-        //  
-
-
+      
+        //-----------------------------------------------------------------------------
+        //[Authorize(Roles = "ADMIN,VEN")]
         //public IActionResult Vista()
         //{
+        //    var rol = HttpContext.Session.GetString("Rol");
+        //    var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
         //    ViewBag.Usuarios = _context.Usuarios
         //        .Select(u => new SelectListItem
         //        {
@@ -188,18 +204,40 @@ namespace ticomarkenet.Controllers
         //            Text = u.Nombre
         //        }).ToList();
 
-        //    // 🔧 Ahora sí se cargan las imágenes
-        //    var productos = _context.Productos
-        //        .Include(p => p.Imagenes)
-        //        .ToList();
+        //    List<Producto> productos;
+
+        //    if (rol == "VEN" && usuarioId.HasValue)
+        //    {
+
+        //        productos = _context.Productos
+        //            .Include(p => p.Imagenes)
+        //            .Where(p => p.UsuarioId == usuarioId.Value)
+        //            .ToList();
+        //    }
+        //    else
+        //    {
+
+        //        productos = _context.Productos
+        //            .Include(p => p.Imagenes)
+        //            .ToList();
+        //    }
+
+
+
 
         //    return View(productos);
         //}
+
+        //------------------------------------------------------------------------------------------
+
         [Authorize(Roles = "ADMIN,VEN")]
         public IActionResult Vista()
         {
-            var rol = HttpContext.Session.GetString("Rol");
-            var usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            string rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            string usuarioIdStr = User.FindFirst("UsuarioId")?.Value;
+
+            int usuarioId = 0;
+            int.TryParse(usuarioIdStr, out usuarioId);
 
             ViewBag.Usuarios = _context.Usuarios
                 .Select(u => new SelectListItem
@@ -210,29 +248,22 @@ namespace ticomarkenet.Controllers
 
             List<Producto> productos;
 
-            if (rol == "VEN" && usuarioId.HasValue)
+            if (rol == "VEN" && usuarioId > 0)
             {
-
                 productos = _context.Productos
                     .Include(p => p.Imagenes)
-                    .Where(p => p.UsuarioId == usuarioId.Value)
+                    .Where(p => p.UsuarioId == usuarioId)
                     .ToList();
             }
             else
             {
-
                 productos = _context.Productos
                     .Include(p => p.Imagenes)
                     .ToList();
             }
 
-
-
-
             return View(productos);
         }
-
-
 
 
         // Asegúrate de tener esta referencia arriba
@@ -360,7 +391,39 @@ namespace ticomarkenet.Controllers
                 //-------------------------------------------------
             }
         }
+        public IActionResult Shop() {
+            var productos = _context.Productos
+          .Include(p => p.Imagenes)
+          .ToList();
 
+            return View(productos);
+
+        }
+        //Aquí es para la pagina Detalle-------------------------------------------------------
+
+        public IActionResult Detalle(int id)
+        {
+            // Obtener el producto con sus imágenes y usuario
+            var producto = _context.Productos
+                .Include(p => p.Imagenes)
+                .Include(p => p.Usuario)
+                .FirstOrDefault(p => p.ProductoId == id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            // Opcional: obtener productos relacionados (por categoría o los últimos agregados)
+            var relacionados = _context.Productos
+                .Where(p => p.ProductoId != id) // excluye el actual
+                .Take(6)
+                .ToList();
+
+            ViewBag.Relacionados = relacionados;
+
+            return View(producto);
+        }
 
 
 
