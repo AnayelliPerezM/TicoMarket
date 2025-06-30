@@ -6,105 +6,333 @@
 }
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/assets/css/slick.css" />
     <link rel="stylesheet" href="~/assets/css/slick-theme.css" />
     <style>
-        .rating i {
-            color: gold;
+        /* Estilos base */
+        .product-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 15px;
         }
 
-        .slider-for img {
-            max-height: 400px; /* o el tamaño que prefieras */
-            object-fit: contain;
+        .product-gallery {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .main-image-container {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            background: #f8f9fa; 
+        }
+
+        .main-image {
             width: 100%;
+            height: 400px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #28a745;
+            .thumbnail.active {
+                
+              border-color: #138ebf;
+            }
+
+        .product-info {
+            padding: 0 15px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #138ebf;
+            margin-bottom: 15px;
+        }
+
+        .rating {
+            margin-bottom: 15px;
+        }
+
+            .rating i {
+                color: #ffc107;
+                font-size: 18px;
+            }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .quantity-value {
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .whatsapp-btn {
+            flex: 1;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .favorite-btn {
+            width: 50px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc3545;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin: 20px 0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+            .tab-btn.active {
+                color: #5db8f5;
+                border-bottom-color: #5db8f5;
+            }
+
+        .tab-content {
+            padding: 10px 0;
         }
     </style>
-      
 }
 
 @section Scripts {
-    <script src="~/assets/js/jquery-1.11.0.min.js"></script>
-    <script src="~/assets/js/slick.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('.slider-for').slick({
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows: false,
-                fade: true,
-                asNavFor: '.slider-nav'
-            });
-            $('.slider-nav').slick({
-                slidesToShow: 4,
-                slidesToScroll: 1,
-                asNavFor: '.slider-for',
-                dots: false,
-                centerMode: true,
-                focusOnSelect: true
-            });
-        });
+    <!-- React sin instalación usando CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  
+
+    <script type="text/babel">
+        // Convertimos el modelo C# a objeto JavaScript
+        const productData = {
+            nombre: "@Html.Raw(Model.Nombre)",
+            descripcion: "@Html.Raw(Model.Descripcion)",
+            precio: @Model.Precio,
+            imagenes: @Html.Raw(Json.Serialize(Model.Imagenes)),
+            usuario: {
+                nombre: "@Model.Usuario.Nombre",
+                telefono: "@Model.Usuario.Telefono"
+            }
+        };
+
+        function ProductDetail() {
+            const [currentImage, setCurrentImage] = React.useState(0);
+            const [quantity, setQuantity] = React.useState(1);
+            const [isFavorite, setIsFavorite] = React.useState(false);
+            const [activeTab, setActiveTab] = React.useState('description');
+
+            const handleQuantityChange = (amount) => {
+                const newQuantity = quantity + amount;
+                if (newQuantity > 0 && newQuantity < 10) {
+                    setQuantity(newQuantity);
+                }
+            };
+
+            return (
+                <div className="product-container">
+                    <div className="mb-3">
+                        <a href="/Productos/Shop" class="  btn btn-outline-secondary">
+                            <i className="fas fa-arrow-left"></i> Volver
+                        </a>
+                    </div>
+
+                    <div className="row">
+                        {/* Galería de imágenes */}
+                        <div className="col-md-6">
+                            <div className="product-gallery">
+                                <div className="main-image-container">
+                                    <img
+                                        src={productData.imagenes[currentImage].ruta}
+                                        alt={productData.nombre}
+                                        className="main-image"
+                                    />
+                                </div>
+                                <div className="thumbnail-container">
+                                    {productData.imagenes.map((img, index) => (
+                                        <img
+                                            key={index}
+                                            src={img.ruta}
+                                            alt={`Thumbnail ${index}`}
+                                            className={`thumbnail ${index === currentImage ? 'active' : ''}`}
+                                            onClick={() => setCurrentImage(index)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Información del producto */}
+                        <div className="col-md-6">
+                            <div className="product-info">
+                                <h1 className="product-title">{productData.nombre}</h1>
+                                <div className="product-price">₡{productData.precio.toLocaleString()}</div>
+
+                                <div className="rating">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <i
+                                            key={star}
+                                            className={`fas fa-star ${star <= 4 ? 'filled' : 'far'}`}
+                                        ></i>
+                                    ))}
+                                    <span className="ms-2">(12 valoraciones)</span>
+                                </div>
+
+                                <div className="tabs">
+                                    <button
+                                        className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('description')}
+                                    >
+                                        Descripción
+                                    </button>
+                                    <button
+                                        className={`tab-btn ${activeTab === 'details' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('details')}
+                                    >
+                                        Detalles
+                                    </button>
+                                </div>
+
+                                <div className="tab-content">
+                                    {activeTab === 'description' && (
+                                        <p>{productData.descripcion}</p>
+                                    )}
+                                    {activeTab === 'details' && (
+                                        <div>
+                                            <p><strong>Vendedor:</strong> {productData.usuario.nombre}</p>
+                                            <p><strong>Contacto:</strong> WhatsApp disponible</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="quantity-selector">
+                                    <button
+                                        className="quantity-btn"
+                                        onClick={() => handleQuantityChange(-1)}
+                                    >
+                                        -
+                                    </button>
+                                    <span className="quantity-value">{quantity}</span>
+                                    <button
+                                        className="quantity-btn"
+                                        onClick={() => handleQuantityChange(1)}
+                                    >
+                                        +
+                                    </button>
+                                </div>
+
+                                <div className="action-buttons">
+                                    <a
+                                        href={`https://wa.me/${productData.usuario.telefono}`}
+                                        target="_blank"
+                                        className="whatsapp-btn"
+                                    >
+                                        <i className="fab fa-whatsapp"></i> Contactar vendedor
+                                    </a>
+                                    <button
+                                        className="favorite-btn"
+                                        onClick={() => setIsFavorite(!isFavorite)}
+                                    >
+                                        <i className={`fas ${isFavorite ? 'fa-heart' : 'fa-heart-o'}`}></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Renderizamos el componente
+        const rootElement = document.getElementById('product-root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<ProductDetail />);
     </script>
 }
 
-<div class="container mt-5">
-    <div class="mb-3">
-        <a asp-action="Shop" class="btn btn-outline-secondary">
-            ← Volver
-        </a>
-    <div class="row">
-        <!-- Galería de imágenes -->
-        <div class="col-md-6">
-            <div class="slider-for mb-3">
-                @foreach (var img in Model.Imagenes)
-                {
-                    <img src="@img.Ruta" class="img-fluid rounded" alt="Imagen producto" />
-                }
-        
-            </div>
-            <div class="slider-nav">
-                @foreach (var img in Model.Imagenes)
-                {
-                    <img src="@img.Ruta" class="img-thumbnail" style="height: 100px;" />
-                }
-            </div>
+<!-- Contenedor para la aplicación React -->
+<div id="product-root">
+    <!-- Mensaje de carga o fallback para cuando JavaScript está deshabilitado -->
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
         </div>
-
-        <!-- Detalles del producto -->
-        <div class="col-md-6">
-            <h2>@Model.Nombre</h2>
-            <h4 class="text-success">₡@Model.Precio</h4>
-
-            <div class="rating mb-2">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="far fa-star"></i>
-            
+        <noscript>
+            <div class="alert alert-warning mt-3">
+                Para una experiencia completa, por favor habilita JavaScript en tu navegador.
             </div>
-
-  
-
-            <p><strong>Descripción:</strong></p>
-            <p>@Model.Descripcion</p>
-
-            
-
-            <p>
-                <strong>Nota:</strong><br />
-                Por este medio te puedes<br />
-                contactar con el vendedor<br />
-       
-            
-            </p>
-
-            <a href="https://wa.me/@Model.Usuario.Telefono" target="_blank" class="btn btn-success btn-lg mt-3">
-                <i class="fab fa-whatsapp"></i> Contactar con @Model.Usuario.Nombre
-            </a>
-
-
-        </div>
-    
-
+        </noscript>
     </div>
 </div>

@@ -2,95 +2,214 @@
 
 @{
     ViewData["Title"] = "Tienda";
-    var categorias = new[] { "Todo", "Electrónica", "Ropa", "Hogar", "Juguetes", "Deportes" };
+
+    string FormatearPrecio(object precio)
+    {
+        if (precio == null) return "$0.00";
+        if (decimal.TryParse(precio.ToString(), out decimal valorDecimal))
+        {
+            return valorDecimal.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("es-MX"));
+        }
+        return "$" + precio.ToString();
+    }
+
+    var categorias = new[] {
+        new { Nombre = "Todo", Icono = "fa-filter" },
+        new { Nombre = "Electrónica", Icono = "fa-tv" },
+        new { Nombre = "Ropa", Icono = "fa-shirt" },
+        new { Nombre = "Hogar", Icono = "fa-couch" },
+        new { Nombre = "Juguetes", Icono = "fa-gamepad" },
+        new { Nombre = "Deportes", Icono = "fa-football-ball" }
+    };
 }
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <style>
     .dashboard-container {
         display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .categorias-superior {
+        display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 2rem;
     }
 
-    .sidebar {
-        width: 200px;
-        background-color: #f8f9fa;
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border: none;
         border-radius: 8px;
-        padding: 1rem;
-        height: fit-content;
+        background: #f1f1f1;
+        font-size: 1rem;
+        color: #212529;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
-        .sidebar button {
-            display: block;
-            width: 100%;
-            margin-bottom: 0.5rem;
-            text-align: left;
-            border: none;
-            background: none;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: background-color 0.3s;
-            cursor: pointer;
+        .filter-btn i {
+            margin-right: 0.6rem;
         }
 
-            .sidebar button:hover,
-            .sidebar button.active {
-                background-color: #cce5ff;
-                color: #004085;
-            }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background-color: rgba(19, 142, 191, 0.1);
+            color: #138ebf;
+            font-weight: 600;
+        }
 
     .product-grid {
         flex: 1;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-
-    .product-card img {
-        height: 180px;
-        object-fit: cover;
-        border-radius: 6px 6px 0 0;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
     }
 
     .product-card {
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
+        border: 1px solid #eee;
+        border-radius: 12px;
         overflow: hidden;
-        background-color: white;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background-color: #fff;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        position: relative;
+    }
+
+        .product-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+
+    .cart-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(19, 142, 191, 0.4);
         display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .product-card:hover .cart-overlay {
+        opacity: 1;
+    }
+
+    .cart-btn {
+        background-color: #138ebf;
+        border: none;
+        border-radius: 50%;
+        padding: 0.75rem;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+        .cart-btn:hover {
+            background-color: #0f7ca5;
+        }
+
+    .product-info {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .product-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-price {
+        font-weight: bold;
+        color: #138ebf;
+        margin-bottom: 0.5rem;
+    }
+
+    .rating {
+        color: #f8ce0b;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-container
+
+    {
         flex-direction: column;
     }
 
-        .product-card .card-body {
-            padding: 0.75rem;
-            text-align: center;
-        }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+
+    .categorias-superior {
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+
+    }
 </style>
 
-<div class="container mt-4">
-    <h4 class="mb-4">Tienda</h4>
+<div class="container mt-5">
+    <h2 class="mb-3 fw-bold text-center">Nuestra Tienda</h2>
+    <p class="text-center mb-4">
+        Ticomarket todo lo que necesitas, en un solo lugar
+    </p>
+
+    <!-- Categorías arriba -->
+    <div class="categorias-superior">
+        @foreach (var cat in categorias)
+        {
+            <button class="filter-btn" data-cat="@cat.Nombre">
+                <i class="fa @cat.Icono"></i> @cat.Nombre
+            </button>
+        }
+    </div>
 
     <div class="dashboard-container">
-        <div class="sidebar">
-            @foreach (var cat in categorias)
-            {
-                <button class="filtro-btn" data-cat="@cat">@cat</button>
-            }
-        </div>
-
         <div class="product-grid" id="contenedor-productos">
             @if (Model != null && Model.Any())
             {
                 foreach (var p in Model)
                 {
                     var rutaImagen = p.Imagenes?.FirstOrDefault()?.Ruta ?? "/images/default.jpg";
-
                     <div class="producto-item product-card" data-cat="@p.Categoria">
                         <img src="@rutaImagen" alt="@p.Nombre" />
-                        <div class="card-body">
-                            <h6 class="fw-bold">@p.Nombre</h6>
-                            <p class="text-muted small mb-2">$@p.Precio</p>
-                            <a asp-action="Detalle" asp-route-id="@p.ProductoId" class="btn btn-sm btn-outline-success">Ver más</a>
+                        <div class="cart-overlay">
+                            <a asp-action="Detalle" asp-route-id="@p.ProductoId" class="cart-btn">
+                                <i class="fa fa-shopping-cart"></i>
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">@p.Nombre</div>
+                            <div class="rating">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-alt"></i>
+                                <i class="fa fa-star-o"></i>
+                            </div>
+                            <div class="product-price">@FormatearPrecio(p.Precio)</div>
                         </div>
                     </div>
                 }
@@ -108,7 +227,7 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const botones = document.querySelectorAll('.filtro-btn');
+            const botones = document.querySelectorAll('.filter-btn');
             const productos = document.querySelectorAll('.producto-item');
 
             botones.forEach(btn => {
@@ -116,8 +235,8 @@
                     const cat = btn.getAttribute('data-cat');
 
                     productos.forEach(p => {
-                        if (cat === 'All' || p.getAttribute('data-cat') === cat) {
-                            p.style.display = 'flex';
+                        if (cat === 'Todo' || p.getAttribute('data-cat') === cat) {
+                            p.style.display = 'block';
                         } else {
                             p.style.display = 'none';
                         }

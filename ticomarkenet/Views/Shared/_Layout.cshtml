@@ -70,14 +70,14 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                   @* inicio *@
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                @* inicio *@
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Productos" asp-action="Shop">Shop</a>
+                        <a class="nav-link text-dark" asp-controller="Productos" asp-action="Shop">Tienda</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
@@ -92,7 +92,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Productos" asp-action="Vista">Productos</a>
                         </li>
-                 
+
 
                         @* Solo el rol ADMIN puede ver Usuarios *@
                         @if (User.IsInRole("ADMIN"))
@@ -104,10 +104,10 @@
                     }
                 </ul>
 
-                   @* fin *@
+                @* fin *@
 
 
-              @* inicio  *@
+                @* inicio  *@
                 <ul class="navbar-nav ms-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -135,7 +135,7 @@
                 </ul>
 
 
-              @* fin  *@
+                @* fin  *@
             </div>
         </div>
     </nav>
